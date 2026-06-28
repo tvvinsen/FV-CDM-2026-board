@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concours de pronostics — Mondial 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #f5f4f0;
+    color: #1a1a18;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  header h1 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #1a1a18;
+  }
+
+  header p {
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    color: #6b6a65;
+  }
+
+  .trophy { font-size: 1.6rem; display: block; margin-bottom: 0.5rem; }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e2e1da;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+    align-items: center;
+  }
+
+  .controls-label {
+    font-size: 12px;
+    color: #6b6a65;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-right: 4px;
+  }
+
+  .btn {
+    font-size: 12px;
+    font-family: inherit;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid #d0cfc8;
+    cursor: pointer;
+    background: #fff;
+    color: #4a4a46;
+    font-weight: 500;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+  }
+
+  .btn:hover { background: #f0efe8; border-color: #b0afa8; }
+  .btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 460px;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #e8e7e0;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #4a4a46;
+    cursor: pointer;
+    padding: 3px 6px;
+    border-radius: 6px;
+    transition: background 0.1s, opacity 0.2s;
+    user-select: none;
+  }
+
+  .legend-item:hover { background: #f0efe8; }
+  .legend-item.faded { opacity: 0.3; }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .podium-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e2e1da;
+    padding: 1.25rem 1.5rem;
+    max-width: 900px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .podium-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b6a65;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 1rem;
+  }
+
+  .podium-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0efe8;
+  }
+
+  .podium-row:last-child { border-bottom: none; }
+
+  .podium-rank {
+    font-size: 18px;
+    font-weight: 700;
+    width: 36px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .podium-name {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .podium-pts {
+    font-size: 14px;
+    color: #6b6a65;
+    font-weight: 500;
+  }
+
+  .podium-bar-wrap {
+    flex: 2;
+    height: 6px;
+    background: #f0efe8;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .podium-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: #9a9890;
+    margin-top: 2rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="trophy">🏆</span>
+  <h1>Concours de pronostics — Coupe du Monde 2026</h1>
+  <p>Évolution des classements — Phase de poules (J3 → J72)</p>
+</header>
+
+<div class="card">
+  <div class="controls">
+    <span class="controls-label">Afficher :</span>
+    <button class="btn" onclick="selectAll()">Tous</button>
+    <button class="btn" onclick="selectNone()">Aucun</button>
+    <button class="btn" onclick="selectTop(3)">🥇 Podium final</button>
+    <button class="btn" onclick="selectTop(5)">Top 5</button>
+    <button class="btn" onclick="selectTop(10)">Top 10</button>
+    <button class="btn" onclick="selectBottom(5)">Bas de tableau</button>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="rankChart" role="img" aria-label="Graphique d'évolution des classements des 26 participants au concours de pronostics, de la journée 3 à la journée 72.">
+      Évolution des positions de chaque participant au fil des journées du tournoi.
+    </canvas>
+  </div>
+
+  <div class="legend" id="legend"></div>
+</div>
+
+<div class="podium-card">
+  <div class="podium-title">Classement final — fin de phase de poules (72 matchs)</div>
+  <div id="podium"></div>
+</div>
+
+<footer>Concours de pronostics · Mondial 2026 · Données arrêtées à la J72</footer>
+
+<script>
+const labels = ['J3','J10','J32','J33','J36','J48','J60','J72'];
+
+const players = [
+  { name: 'Jessy',     ranks: [4,3,7,8,6,8,6,1],   pts: 80 },
+  { name: 'Jérôme',   ranks: [9,16,1,1,2,2,1,2],   pts: 79 },
+  { name: 'David G.', ranks: [15,18,11,10,9,7,3,3], pts: 78 },
+  { name: 'Robin',    ranks: [null,null,2,2,1,1,2,4], pts: 76 },
+  { name: 'Benoît',   ranks: [null,10,18,18,14,12,4,5], pts: 76 },
+  { name: 'Thibault', ranks: [23,26,13,15,17,9,7,6], pts: 75 },
+  { name: 'Dominique',ranks: [5,4,5,5,4,4,8,7],   pts: 75 },
+  { name: 'Florent',  ranks: [12,17,10,9,7,6,5,8], pts: 72 },
+  { name: 'Richard',  ranks: [26,20,3,3,3,5,13,9], pts: 71 },
+  { name: 'Jacques',  ranks: [2,8,22,22,18,18,11,10], pts: 70 },
+  { name: 'Guillaume',ranks: [24,24,24,23,20,13,12,11], pts: 68 },
+  { name: 'Florian',  ranks: [7,11,17,17,19,14,10,12], pts: 68 },
+  { name: 'Loïc',     ranks: [7,1,4,4,5,3,9,13],  pts: 67 },
+  { name: 'Antoine',  ranks: [14,13,23,24,24,20,14,14], pts: 63 },
+  { name: 'Thomas',   ranks: [3,2,12,13,8,11,15,15], pts: 63 },
+  { name: 'Nicolas',  ranks: [8,6,21,21,23,23,19,16], pts: 63 },
+  { name: 'Charlotte',ranks: [21,9,16,14,16,16,22,17], pts: 63 },
+  { name: 'Fabrice',  ranks: [17,5,14,7,16,10,17,18], pts: 63 },
+  { name: 'David F.', ranks: [20,22,19,19,21,15,20,19], pts: 62 },
+  { name: 'Marion',   ranks: [13,12,15,16,13,17,18,20], pts: 59 },
+  { name: 'Aurore',   ranks: [25,14,9,12,11,19,16,21], pts: 59 },
+  { name: 'Leïla',    ranks: [16,23,20,20,22,25,21,22], pts: 57 },
+  { name: 'Yannick',  ranks: [22,25,26,26,26,24,25,23], pts: 56 },
+  { name: 'Audrey',   ranks: [10,15,25,25,25,26,26,24], pts: 56 },
+  { name: 'Cyrille',  ranks: [11,7,8,11,12,21,23,25], pts: 54 },
+  { name: 'Christian',ranks: [1,19,6,6,10,22,24,26], pts: 51 },
+];
+
+const COLORS = [
+  '#2a78d6','#1baf7a','#eda100','#008300','#7c3aed',
+  '#e34948','#e87ba4','#eb6834','#0891b2','#9333ea',
+  '#16a34a','#b45309','#db2777','#0d9488','#c026d3',
+  '#65a30d','#dc2626','#2563eb','#d97706','#ea580c',
+  '#059669','#4a3aa7','#f59e0b','#0c6e8f','#8b5cf6','#d946ef'
+];
+
+let hidden = new Set();
+
+function buildDatasets() {
+  return players.map((p, i) => ({
+    label: p.name,
+    data: p.ranks,
+    borderColor: COLORS[i],
+    backgroundColor: COLORS[i],
+    borderWidth: 2.5,
+    pointRadius: 5,
+    pointHoverRadius: 8,
+    tension: 0.3,
+    spanGaps: true,
+    hidden: hidden.has(p.name),
+  }));
+}
+
+const ctx = document.getElementById('rankChart').getContext('2d');
+const chart = new Chart(ctx, {
+  type: 'line',
+  data: { labels, datasets: buildDatasets() },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        reverse: true,
+        min: 1,
+        max: 26,
+        ticks: {
+          stepSize: 1,
+          callback: v => v === 1 ? '1er' : v + 'e',
+          color: '#9a9890',
+          font: { size: 11 },
+        },
+        grid: { color: '#ece9e0' },
+      },
+      x: {
+        ticks: { color: '#6b6a65', font: { size: 13, weight: '500' } },
+        grid: { display: false },
+      }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#1a1a18',
+        titleColor: '#fff',
+        bodyColor: '#d0cfc8',
+        padding: 12,
+        cornerRadius: 8,
+        callbacks: {
+          title: ctx => 'Journée ' + ctx[0].label.replace('J',''),
+          label: ctx => {
+            const pos = ctx.parsed.y;
+            if (pos === null) return null;
+            const medal = pos === 1 ? ' 🥇' : pos === 2 ? ' 🥈' : pos === 3 ? ' 🥉' : '';
+            return ` ${ctx.dataset.label} — ${pos === 1 ? '1er' : pos + 'e'}${medal}`;
+          }
+        },
+        itemSort: (a, b) => (a.parsed.y ?? 99) - (b.parsed.y ?? 99),
+        filter: item => item.parsed.y !== null,
+      }
+    },
+    interaction: { mode: 'index', intersect: false },
+    animation: { duration: 500 },
+  }
+});
+
+function buildLegend() {
+  const leg = document.getElementById('legend');
+  leg.innerHTML = '';
+  players.forEach((p, i) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item' + (hidden.has(p.name) ? ' faded' : '');
+    item.innerHTML = `<span class="legend-dot" style="background:${COLORS[i]}"></span>${p.name}`;
+    item.onclick = () => toggle(p.name);
+    leg.appendChild(item);
+  });
+}
+
+function buildPodium() {
+  const el = document.getElementById('podium');
+  const maxPts = players[0].pts;
+  const medals = ['🥇','🥈','🥉'];
+  players.forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'podium-row';
+    const rankLabel = i < 3 ? medals[i] : `${i+1}e`;
+    row.innerHTML = `
+      <span class="podium-rank">${rankLabel}</span>
+      <span class="podium-name">${p.name}</span>
+      <div class="podium-bar-wrap">
+        <div class="podium-bar" style="width:${(p.pts/maxPts*100).toFixed(1)}%; background:${COLORS[i]}"></div>
+      </div>
+      <span class="podium-pts">${p.pts} pts</span>
+    `;
+    el.appendChild(row);
+  });
+}
+
+function toggle(name) {
+  if (hidden.has(name)) hidden.delete(name);
+  else hidden.add(name);
+  chart.data.datasets = buildDatasets();
+  chart.update();
+  buildLegend();
+}
+
+function selectAll() {
+  hidden.clear();
+  chart.data.datasets = buildDatasets();
+  chart.update();
+  buildLegend();
+}
+
+function selectNone() {
+  players.forEach(p => hidden.add(p.name));
+  chart.data.datasets = buildDatasets();
+  chart.update();
+  buildLegend();
+}
+
+function selectTop(n) {
+  players.forEach((p, i) => {
+    if (i < n) hidden.delete(p.name);
+    else hidden.add(p.name);
+  });
+  chart.data.datasets = buildDatasets();
+  chart.update();
+  buildLegend();
+}
+
+function selectBottom(n) {
+  const total = players.length;
+  players.forEach((p, i) => {
+    if (i >= total - n) hidden.delete(p.name);
+    else hidden.add(p.name);
+  });
+  chart.data.datasets = buildDatasets();
+  chart.update();
+  buildLegend();
+}
+
+buildLegend();
+buildPodium();
+</script>
+</body>
+</html>
