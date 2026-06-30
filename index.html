@@ -251,7 +251,7 @@ const players = [
   { name: 'Aurore',    ranks: [25,14,9,12,11,19,16,21,24,24,26], pts: 61 },
   { name: 'Audrey',    ranks: [10,15,25,25,25,26,26,24,26,25,22], pts: 66 },
   { name: 'Cyrille',   ranks: [11,7,8,11,12,21,23,25,25,26,25], pts: 62 },
-];
+].sort((a, b) => b.pts - a.pts);
 
 const COLORS = [
   '#2a78d6','#1baf7a','#eda100','#008300','#7c3aed',
