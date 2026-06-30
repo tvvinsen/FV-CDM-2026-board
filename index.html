@@ -191,7 +191,7 @@
 <header>
   <span class="trophy">🏆</span>
   <h1>Concours de pronostics — Coupe du Monde 2026</h1>
-  <p>Évolution des classements — Phase de poules (J3 → J72)</p>
+  <p>Évolution des classements — Phase de poules et 16es de finale (J3 → J76)</p>
 </header>
 
 <div class="card">
@@ -215,42 +215,42 @@
 </div>
 
 <div class="podium-card">
-  <div class="podium-title">Classement final — fin de phase de poules (72 matchs)</div>
+  <div class="podium-title">Classement actuel — après 76 matchs</div>
   <div id="podium"></div>
 </div>
 
-<footer>Concours de pronostics · Mondial 2026 · Données arrêtées à la J72</footer>
+<footer>Concours de pronostics · Mondial 2026 · Données arrêtées à la J76</footer>
 
 <script>
-const labels = ['J3','J10','J32','J33','J36','J48','J60','J72'];
+const labels = ['J3','J10','J32','J33','J36','J48','J60','J72','J75','J76'];
 
 const players = [
-  { name: 'Jessy',     ranks: [4,3,7,8,6,8,6,1],   pts: 80 },
-  { name: 'Jérôme',   ranks: [9,16,1,1,2,2,1,2],   pts: 79 },
-  { name: 'David G.', ranks: [15,18,11,10,9,7,3,3], pts: 78 },
-  { name: 'Robin',    ranks: [null,null,2,2,1,1,2,4], pts: 76 },
-  { name: 'Benoît',   ranks: [null,10,18,18,14,12,4,5], pts: 76 },
-  { name: 'Thibault', ranks: [23,26,13,15,17,9,7,6], pts: 75 },
-  { name: 'Dominique',ranks: [5,4,5,5,4,4,8,7],   pts: 75 },
-  { name: 'Florent',  ranks: [12,17,10,9,7,6,5,8], pts: 72 },
-  { name: 'Richard',  ranks: [26,20,3,3,3,5,13,9], pts: 71 },
-  { name: 'Jacques',  ranks: [2,8,22,22,18,18,11,10], pts: 70 },
-  { name: 'Guillaume',ranks: [24,24,24,23,20,13,12,11], pts: 68 },
-  { name: 'Florian',  ranks: [7,11,17,17,19,14,10,12], pts: 68 },
-  { name: 'Loïc',     ranks: [7,1,4,4,5,3,9,13],  pts: 67 },
-  { name: 'Antoine',  ranks: [14,13,23,24,24,20,14,14], pts: 63 },
-  { name: 'Thomas',   ranks: [3,2,12,13,8,11,15,15], pts: 63 },
-  { name: 'Nicolas',  ranks: [8,6,21,21,23,23,19,16], pts: 63 },
-  { name: 'Charlotte',ranks: [21,9,16,14,16,16,22,17], pts: 63 },
-  { name: 'Fabrice',  ranks: [17,5,14,7,16,10,17,18], pts: 63 },
-  { name: 'David F.', ranks: [20,22,19,19,21,15,20,19], pts: 62 },
-  { name: 'Marion',   ranks: [13,12,15,16,13,17,18,20], pts: 59 },
-  { name: 'Aurore',   ranks: [25,14,9,12,11,19,16,21], pts: 59 },
-  { name: 'Leïla',    ranks: [16,23,20,20,22,25,21,22], pts: 57 },
-  { name: 'Yannick',  ranks: [22,25,26,26,26,24,25,23], pts: 56 },
-  { name: 'Audrey',   ranks: [10,15,25,25,25,26,26,24], pts: 56 },
-  { name: 'Cyrille',  ranks: [11,7,8,11,12,21,23,25], pts: 54 },
-  { name: 'Christian',ranks: [1,19,6,6,10,22,24,26], pts: 51 },
+  { name: 'Jessy',     ranks: [4,3,7,8,6,8,6,1,1,1],   pts: 90 },
+  { name: 'Robin',     ranks: [null,null,2,2,1,1,2,4,2,2], pts: 86 },
+  { name: 'David G.',  ranks: [15,18,11,10,9,7,3,3,3,3], pts: 86 },
+  { name: 'Benoît',    ranks: [null,10,18,18,14,12,4,5,4,4], pts: 84 },
+  { name: 'Florent',   ranks: [12,17,10,9,7,6,5,8,7,5], pts: 84 },
+  { name: 'Jérôme',    ranks: [9,16,1,1,2,2,1,2,5,6],   pts: 83 },
+  { name: 'Thibault',  ranks: [23,26,13,15,17,9,7,6,6,7], pts: 83 },
+  { name: 'Nicolas',   ranks: [8,6,21,21,23,23,19,16,15,8], pts: 78 },
+  { name: 'Dominique', ranks: [5,4,5,5,4,4,8,7,8,9],   pts: 77 },
+  { name: 'Jacques',   ranks: [2,8,22,22,18,18,11,10,9,10], pts: 76 },
+  { name: 'Loïc',      ranks: [7,1,4,4,5,3,9,13,13,11], pts: 75 },
+  { name: 'Thomas',    ranks: [3,2,12,13,8,11,15,15,10,12], pts: 75 },
+  { name: 'Richard',   ranks: [26,20,3,3,3,5,13,9,11,13], pts: 75 },
+  { name: 'Guillaume', ranks: [24,24,24,23,20,13,12,11,12,14], pts: 74 },
+  { name: 'Marion',    ranks: [13,12,15,16,13,17,18,20,16,15], pts: 71 },
+  { name: 'Fabrice',   ranks: [17,5,14,7,16,10,17,18,17,16], pts: 71 },
+  { name: 'Florian',   ranks: [7,11,17,17,19,14,10,12,14,17], pts: 70 },
+  { name: 'Charlotte', ranks: [21,9,16,14,16,16,22,17,18,18], pts: 69 },
+  { name: 'David F.',  ranks: [20,22,19,19,21,15,20,19,19,19], pts: 68 },
+  { name: 'Yannick',   ranks: [22,25,26,26,26,24,25,23,22,20], pts: 66 },
+  { name: 'Antoine',   ranks: [14,13,23,24,24,20,14,14,20,21], pts: 65 },
+  { name: 'Christian', ranks: [1,19,6,6,10,22,24,26,23,22], pts: 65 },
+  { name: 'Leïla',     ranks: [16,23,20,20,22,25,21,22,21,23], pts: 65 },
+  { name: 'Aurore',    ranks: [25,14,9,12,11,19,16,21,24,24], pts: 61 },
+  { name: 'Audrey',    ranks: [10,15,25,25,25,26,26,24,26,25], pts: 60 },
+  { name: 'Cyrille',   ranks: [11,7,8,11,12,21,23,25,25,26], pts: 58 },
 ];
 
 const COLORS = [
